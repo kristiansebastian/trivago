@@ -1,3 +1,4 @@
+-- Search variables
 set @domain = 'domain1';
 set @first_date = '2016-04-24';
 set @last_date = '2017-04-26';
