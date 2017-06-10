@@ -1,3 +1,4 @@
+-- Search variables
 set @domain = 'domain1';
 set @first_date = '2016-04-24';
 set @last_date = '2017-04-26';
@@ -5,8 +6,8 @@ set @tlds = 'es,pt';
 
 select 
 	g.page_name, g.total_views, g.total_visits, g.average_duration, 
-	max_vw.tld as tld_max_visits,
-	max_vt.date_tld as date_tld_max_bounce_rate,
+	max_vs.tld as tld_max_visits,
+	max_br.date_tld as date_tld_max_bounce_rate,
 	min_new_vt.date_tld as date_tld_min_new_visits
 	
 from (
@@ -27,7 +28,7 @@ join (
 		from pages 
 		where domain = @domain and @first_date <= date_stats and date_stats <= @last_date and 
 			find_in_set(tld,@tlds)) a 
-	where a.visits = a.max_visits) max_vw
+	where a.visits = a.max_visits) max_vs
 	
 join (
 	-- Create date + tld with max bounce rate by page name 
@@ -38,7 +39,7 @@ join (
 		from pages 
 		where domain = @domain and @first_date <= date_stats and date_stats <= @last_date and
 			find_in_set(tld,@tlds)) a 
-	where a.bounce_rate = a.max_bounce_rate) max_vt
+	where a.bounce_rate = a.max_bounce_rate) max_br
 	
 join (
 	-- Create date + tld with min visitors by page name 
@@ -52,9 +53,33 @@ join (
 	where a.new_visitors = a.min_new_visitors) min_new_vt
 
 on 
-	g.page_name = max_vw.page_name
-	and  g.page_name = max_vt.page_name 
+	g.page_name = max_vs.page_name
+	and  g.page_name = max_br.page_name
 	and g.page_name = min_new_vt.page_name
-	and total_views > 2149000
+	and total_views > 19491840
 	
 order by average_duration;
+
+/**
+Output example:
++-----------+-------------+--------------+------------------+----------------+--------------------------+-------------------------+
+| page_name | total_views | total_visits | average_duration | tld_max_visits | date_tld_max_bounce_rate | date_tld_min_new_visits |
++-----------+-------------+--------------+------------------+----------------+--------------------------+-------------------------+
+| page390   |    65430528 |     27485184 |           1.0000 | pt             | 2017-04-11/pt            | 2017-04-11/pt           |
+| page36    |    49613824 |     20049920 |           5.0000 | pt             | 2016-08-16/pt            | 2016-08-16/pt           |
+| page320   |    43507712 |     13179904 |          10.0000 | pt             | 2016-07-16/pt            | 2016-07-16/pt           |
+| page361   |    77426688 |     22930432 |          19.0000 | es             | 2016-11-25/es            | 2016-11-25/es           |
+| page341   |    42168320 |     26633216 |          21.0000 | es             | 2016-11-19/es            | 2016-11-19/es           |
+| page351   |   115126272 |     30373888 |          22.5000 | pt             | 2017-03-05/pt            | 2017-03-05/pt           |
+| page40    |    88421376 |     38052864 |          36.0000 | pt             | 2016-12-10/es            | 2016-12-10/es           |
+| page290   |     2224128 |     20675584 |          46.0000 | pt             | 2016-06-20/pt            | 2016-06-20/pt           |
+| page61    |    38596608 |     15630336 |          49.0000 | pt             | 2016-10-04/pt            | 2016-10-04/pt           |
+| page11    |     5912576 |     38732800 |          55.0000 | es             | 2016-07-07/es            | 2016-07-07/es           |
+| page25    |    85457920 |     14524416 |          66.0000 | es             | 2017-04-23/es            | 2016-12-21/es           |
+| page310   |     9995264 |     37116928 |          70.0000 | pt             | 2016-09-12/pt            | 2016-09-12/pt           |
+| page35    |    77107200 |     24787968 |          73.0000 | es             | 2016-08-14/es            | 2016-08-14/es           |
+| page111   |    11545600 |     13811712 |          79.0000 | es             | 2017-01-05/es            | 2017-01-05/es           |
+| page31    |    51734528 |     34946048 |          95.0000 | pt             | 2017-03-14/pt            | 2017-03-14/pt           |
+| page300   |    19491840 |     20631552 |          99.0000 | es             | 2017-02-26/es            | 2017-02-26/es           |
++-----------+-------------+--------------+------------------+----------------+--------------------------+-------------------------+
+*/
