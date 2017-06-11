@@ -19,4 +19,12 @@ from (
 	group by page_name
 	order by page_name limit 200
 ) g;
-	
+
+/**
+Output using random data with 1024000 rows:
++-------------+--------------+------------------+
+| total_views | total_visits | average_duration |
++-------------+--------------+------------------+
+|     7931912 |      3866469 |        9855.0000 |
++-------------+--------------+------------------+
+*/
