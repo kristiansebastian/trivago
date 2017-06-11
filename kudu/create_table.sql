@@ -1,4 +1,5 @@
- -- Create the Impala pages table. Required to create the Kudu table from it
+ -- Create the Impala pages table, the table name must match with the file name in Hadoop.
+ -- Required to create the Kudu table from it.
  CREATE TABLE pages_impala (
   page_name STRING,
   date_stats STRING,
@@ -28,14 +29,14 @@ LOCATION '/sfmta/';
 -- Format the unixtime is possible with from_unixtime(t, 'yyyy-MM-dd') but
 -- queries must be performed with timestamp
 CREATE TABLE pages
-PRIMARY KEY (domain, date_stats, tld)
+PRIMARY KEY (page_name, domain, date_stats, tld)
 PARTITION BY HASH(domain, tld) PARTITIONS 8
 STORED AS KUDU
 AS SELECT
+  page_name,
   UNIX_TIMESTAMP(date_stats,  'yyyy-MM-dd') AS date_stats,
   domain,
   tld,
-  page_name,
   views,
   visits,
   average,

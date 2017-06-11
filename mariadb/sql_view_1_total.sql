@@ -14,8 +14,8 @@ from (
 	select 	page_name, 
 		sum(views) as total_views, sum(visits) as total_visits, avg(average) as average_duration 
 	from pages 
-	where domain = @domain and @first_date <= date_stats and date_stats <= @last_date and 
-		find_in_set(tld,@tlds) 
+	where domain = @domain and @first_date <= date_stats and date_stats <= @last_date and
+		find_in_set(tld,@tlds)
 	group by page_name
 	order by page_name limit 200
 ) g;

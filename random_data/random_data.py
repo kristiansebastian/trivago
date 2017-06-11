@@ -50,10 +50,11 @@ for dummy_1 in range(0, ROWS):
 
         page_name = random.choice(page_names)
         domain = random.choice(domains)
-        date_stats = base_date + timedelta(days=random.randint(0, 365))
+        # Range of 2 years of random dates
+        date_stats = base_date + timedelta(days=random.randint(0, 365 * 2))
         tld = random.choice(tlds)
 
-        key = "{}_{}_{}".format(page_name, domain, tld)
+        key = "{}_{}_{}_{}".format(page_name, domain, tld, str(date_stats))
         if key in keys_already_generated:
             continue
 
